@@ -1,5 +1,6 @@
 class PicsController < ApplicationController
   before_action :find_pic, only: [:show, :edit, :update, :destroy, :upvote]
+  before_action :check_owner, only: [:edit, :update, :destroy ]
   before_action :authenticate_user!, except: [:index, :show]
 
   def index
@@ -46,6 +47,12 @@ class PicsController < ApplicationController
   end
 
   private
+
+  def check_owner
+      if @pic.user != current_user
+        redirect_to @pic, notice: "You are not authorized to do that"
+      end
+    end
 
   def pic_params
     params.require(:pic).permit(:title, :description, :image)
